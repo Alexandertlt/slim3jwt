@@ -38,7 +38,7 @@ $app->post('/login', function(Request $request, Response $response){
                 "context" => [
                     "user" => [
                         "user_login" => $login,
-                        "user_id"    => $password
+                        "user_id"    => $user_from_db->id_user
                     ]
                 ]
             );
@@ -48,7 +48,7 @@ $app->post('/login', function(Request $request, Response $response){
             return $response->withStatus(200)
                 ->write(json_encode([
                     "token"      => $jwt,
-                    "id_user" => 1
+                    "id_user" => $user_from_db->id_user
                 ]));
         } else {
             return $response->withStatus(401)

@@ -27,3 +27,9 @@ $container['db'] = function ($c) {
 
     return $pdo;
 };
+
+// user information
+$container['user'] = function ($c){
+    $user_info = $c;
+    return $user_info;
+};

@@ -13,16 +13,17 @@ require __DIR__ . '/../src/dependencies.php';
 // Register middleware
 require __DIR__ . '/../src/middleware.php';
 
-require __DIR__ . '/../src/TokenAuth.php';
+// require __DIR__ . '/../src/TokenAuth.php';
 
 // \Slim\Slim::registerAutoloader();
 
-$app->add(new \TokenAuth());
+// $app->add(new \TokenAuth());
 
 // Register routes
 require __DIR__ . '/../src/routes.php';
 
 // Все наше здесь:
 require __DIR__ . '/../src/models/login.php';
+require __DIR__ . '/../src/models/clients.php';
 
 $app->run();
