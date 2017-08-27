@@ -60,7 +60,7 @@ $app->add(function ($req, $res, $next) {
             ->withHeader('Access-Control-Allow-Origin', '*')
             ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
             ->withHeader('Access-Control-Allow-Methods', 'GET, POST')
-            ->withHeader('Content-Type', 'application/json');
+            ->withHeader('Content-Type', 'application/json; charset=utf-8');
     } else {
         http_response_code(403);
         exit;
