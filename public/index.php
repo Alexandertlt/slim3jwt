@@ -25,5 +25,6 @@ require __DIR__ . '/../src/routes.php';
 // Все наше здесь:
 require __DIR__ . '/../src/models/login.php';
 require __DIR__ . '/../src/models/clients.php';
+require __DIR__ . '/../src/models/client_add.php';
 
 $app->run();

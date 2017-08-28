@@ -14,6 +14,30 @@ $app->post('/clients', function(Request $request, Response $response){
             ->write('{"error":{"text":"Forbidden for: '.$this->user_info->role.'"}}');
     }
 
-    // Получаем всех клиентов по текущей фирме. Будут фильтры
+    $id_firm = $this->user_info->id_firm;
+
+    // Получаем всех клиентов по текущей фирме. Будут фильтры, но потом...
+
+    $sql = "SELECT COUNT(*) AS `count` FROM `clients` WHERE `id_firm` = $id_firm AND `deleted` = 0 ORDER BY `name` LIMIT 1000";
+    $db = $this->db;
+    $stmt = $db->prepare($sql);
+    $stmt->execute();
+    $count = $stmt->fetchObject()->count;
+
+    $sql = "SELECT * FROM `clients` WHERE `id_firm` = $id_firm AND `deleted` = 0 ORDER BY `name` LIMIT 1000";
+    $db = $this->db;
+    $stmt = $db->prepare($sql);
+    $stmt->execute();
+
+    $json = new stdclass;
+    $json->count = $count;
+
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+        $json->clients[]=$row; // array!
+    }
+
+    $db = null;
+
+    return $response->write(json_encode($json));
 
 });
