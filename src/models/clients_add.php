@@ -6,7 +6,7 @@
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
-$app->post('/client/add', function(Request $request, Response $response) {
+$app->post('/clients/add', function(Request $request, Response $response) {
 
     // Проверка прав. Разрешено всем кроме клиентов
     preg_match('/s-admin|admin|director|instructor/', $this->user_info->role, $matches);
