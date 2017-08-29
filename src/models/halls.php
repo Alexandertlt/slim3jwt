@@ -1,14 +1,14 @@
 <?php
 /**
- * Выдачача списка клиентов
+ * Выдача списка залов фирмы
  */
 
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
-$app->get('/clients', function(Request $request, Response $response){
-    // Проверка прав. Разрешено всем кроме клиентов
-    preg_match('/s-admin|admin|director|instructor/',$this->user_info->role, $matches);
+$app->get('/halls', function(Request $request, Response $response){
+    // Проверка прав. Разрешено всем
+    preg_match('/admin|director|instructor|client/',$this->user_info->role, $matches);
     if (count($matches) == 0){
         return $response->withStatus(403)
             ->write('{"error":{"text":"Forbidden for: '.$this->user_info->role.'"}}');
@@ -18,13 +18,13 @@ $app->get('/clients', function(Request $request, Response $response){
 
     // Получаем всех клиентов по текущей фирме. Будут фильтры, но потом...
 
-    $sql = "SELECT COUNT(*) AS `count` FROM `clients` WHERE `id_firm` = $id_firm AND `deleted` = 0 ORDER BY `name` LIMIT 1000";
+    $sql = "SELECT COUNT(*) AS `count` FROM `halls` WHERE `id_firm` = $id_firm ORDER BY `order` LIMIT 20";
     $db = $this->db;
     $stmt = $db->prepare($sql);
     $stmt->execute();
     $count = $stmt->fetchObject()->count;
 
-    $sql = "SELECT * FROM `clients` WHERE `id_firm` = $id_firm AND `deleted` = 0 ORDER BY `name` LIMIT 1000";
+    $sql = "SELECT * FROM `halls` WHERE `id_firm` = $id_firm ORDER BY `order` LIMIT 20";
     $db = $this->db;
     $stmt = $db->prepare($sql);
     $stmt->execute();
@@ -33,7 +33,7 @@ $app->get('/clients', function(Request $request, Response $response){
     $json->count = $count;
 
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-        $json->clients[]=$row; // array!
+        $json->halls[]=$row; // array!
     }
 
     $db = null;
