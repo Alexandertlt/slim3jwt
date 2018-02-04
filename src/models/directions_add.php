@@ -1,14 +1,14 @@
 <?php
 /**
- * Добавление нового зала
+ * Добавление нового клиента
  */
 
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
-$app->post('/halls/add', function(Request $request, Response $response) {
+$app->post('/directions/add', function(Request $request, Response $response) {
 
-    // Проверка прав. Разрешено только директору
+    // Проверка прав. Разрешено всем кроме клиентов
     preg_match('/director/', $this->user_info->role, $matches);
     if (count($matches) == 0) {
         return $response->withStatus(403)
@@ -18,13 +18,16 @@ $app->post('/halls/add', function(Request $request, Response $response) {
     $id_firm = $this->user_info->id_firm;
 
     $params = $request->getParsedBody();
-    $sql = "INSERT INTO `halls` SET `id_firm` = $id_firm, `name` = :name, `id_branch` = :id_branch, `description` = :description, `ts` = NOW()";
+    $sql = "INSERT INTO `directions` SET `id_firm` = $id_firm, `name` = :name, `text` = :text, `wear_info` = :wear_info, `cost_info` = :cost_info, `picture` = :picture"
+        .', `ts` = NOW()';
     try {
         $db = $this->db;
         $stmt = $db->prepare($sql);
         $stmt->execute([ 'name' => $params['name'],
-            'id_branch' => $params['id_branch'],
-            'description' => $params['decription'] ]);
+            'text' =>$params['text'],
+            'wear_info' => $params['wear_info'],
+            'cost_info' => $params['cost_info'],
+            'picture' => $params['picture'] ]);
 
     } catch (PDOException $e) {
         // Добавить проверку на дублирующиеся имена
@@ -32,5 +35,5 @@ $app->post('/halls/add', function(Request $request, Response $response) {
             ->write( '{"error":{"text":' . $e->getMessage() . '}}');
     }
 
-    return $response->write('{"id_hall":'.$db->lastInsertId().'}');
+    return $response->write('{"id_direction":'.$db->lastInsertId().'}');
 });

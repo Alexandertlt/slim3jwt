@@ -1,4 +1,9 @@
 <?php
+/* header('Access-Control-Allow-Origin: http://myseason', true);
+header('Access-Control-Allow-Headers:Content-Type, Authorization, Accept, X-Requested-With');
+header('Access-Control-Allow-Methods:OPTIONS, TRACE, GET, HEAD, POST, PUT');
+*/
+
 require __DIR__ . '/../vendor/autoload.php';
 
 // Instantiate the app
@@ -30,4 +35,15 @@ require __DIR__ . '/../src/models/branches.php';
 require __DIR__ . '/../src/models/branches_add.php';
 require __DIR__ . '/../src/models/halls.php';
 require __DIR__ . '/../src/models/halls_add.php';
+require __DIR__ . '/../src/models/directions.php';
+require __DIR__ . '/../src/models/directions_add.php';
+require __DIR__ . '/../src/models/classes.php';
+require __DIR__ . '/../src/models/main.php';
+require __DIR__ . '/../src/models/tseasons.php';
+require __DIR__ . '/../src/models/seasons_add.php';
+require __DIR__ . '/../src/models/presence_set.php';
+require __DIR__ . '/../src/models/client_info.php';
+require __DIR__ . '/../src/models/seasons.php';
+require __DIR__ . '/../src/models/payments.php';
+
 $app->run();

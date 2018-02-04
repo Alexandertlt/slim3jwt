@@ -5,6 +5,12 @@ use \Psr\Http\Message\ResponseInterface as Response;
 
 use \Firebase\JWT\JWT;
 
+$app->options('/{routes:.+}', function ($request, $response, $args) {
+    return $response
+        ->withHeader('Access-Control-Allow-Origin', 'http://mysite')
+        ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
+        ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+});
 
 // Authenticate route.
 $app->post('/authenticate', function (Request $request, Response $response) {

@@ -5,6 +5,16 @@ use \Firebase\JWT\JWT;
 
 
 $app->add(function ($req, $res, $next) {
+    // CORS! For preflight:
+    if ($req->isOptions()){
+        $response = $next($req, $res);
+        return $response
+            ->withHeader('Access-Control-Allow-Origin', 'http://myseason')
+            ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
+            ->withHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+        exit;
+    }
+
     $path = $req->getUri()->getPath();
     $matches = null;
     preg_match('/login|signup/', $path, $matches);  // Запросы, не требующие авторизации
@@ -24,7 +34,9 @@ $app->add(function ($req, $res, $next) {
         if (isset($decoded)) {
             // Ищем клиента в базе
             // Find a corresponding token.
-            $sql = 'SELECT * FROM `users` WHERE `id_user` = :id_user AND `disabled` = 0';
+            $sql = 'SELECT `users`.*, `instructors`.`id_instr` FROM `users`
+LEFT JOIN `instructors` ON `users`.`id_user` = `instructors`.`id_user`
+WHERE `users`.`id_user` = :id_user AND `users`.`disabled` = 0';
             $this->user_info = $decoded;
 
             try {
@@ -57,13 +69,19 @@ $app->add(function ($req, $res, $next) {
         $response = $next($req, $res);
 
         return $response
-            ->withHeader('Access-Control-Allow-Origin', '*')
+            ->withHeader('Access-Control-Allow-Origin', 'http://myseason')
             ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
-            ->withHeader('Access-Control-Allow-Methods', 'GET, POST')
+            ->withHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
             ->withHeader('Content-Type', 'application/json; charset=utf-8');
+
     } else {
         http_response_code(403);
         exit;
     }
 
 });
+
+/*
+$app->response->headers->set('Access-Control-Allow-Origin', 'http://myseason');
+$app->response->headers->set('Access-Control-Allow-Headers','Content-Type, Authorization, Accept, X-Requested-With');
+ */

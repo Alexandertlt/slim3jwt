@@ -1,13 +1,13 @@
 <?php
 /**
- * Выдачача списка филиалов
+ * Выдачача списка направлений
  */
 
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
-$app->get('/branches', function(Request $request, Response $response){
-    // Проверка прав. Разрешено всем
+$app->get('/directions', function(Request $request, Response $response){
+    // Проверка прав. Разрешено всем кроме клиентов
     preg_match('/admin|director|instructor|client/',$this->user_info->role, $matches);
     if (count($matches) == 0){
         return $response->withStatus(403)
@@ -18,13 +18,13 @@ $app->get('/branches', function(Request $request, Response $response){
 
     // Получаем всех клиентов по текущей фирме. Будут фильтры, но потом...
 
-    $sql = "SELECT COUNT(*) AS `count` FROM `branches` WHERE `id_firm` = $id_firm  ORDER BY `name` LIMIT 10";
+    $sql = "SELECT COUNT(*) AS `count` FROM `directions` WHERE `id_firm` = $id_firm ORDER BY `name` LIMIT 100";
     $db = $this->db;
     $stmt = $db->prepare($sql);
     $stmt->execute();
     $count = $stmt->fetchObject()->count;
 
-    $sql = "SELECT * FROM `branches` WHERE `id_firm` = $id_firm  ORDER BY `name` LIMIT 10";
+    $sql = "SELECT * FROM `directions` WHERE `id_firm` = $id_firm ORDER BY `name` LIMIT 100";
     $db = $this->db;
     $stmt = $db->prepare($sql);
     $stmt->execute();
@@ -33,7 +33,7 @@ $app->get('/branches', function(Request $request, Response $response){
     $json->count = $count;
 
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-        $json->branches[]=$row; // array!
+        $json->directions[]=$row; // array!
     }
 
     $db = null;
