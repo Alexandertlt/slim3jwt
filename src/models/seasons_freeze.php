@@ -1,12 +1,12 @@
 <?php
 /**
- * Удаление абонемента
+ * Заморозить абонемента
  */
 
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
-$app->post('/seasons/del', function(Request $request, Response $response) {
+$app->post('/seasons/freeze', function(Request $request, Response $response) {
 
     // Проверка прав. Разрешено всем, кроме клиентов
     preg_match('/s-admin|admin|director|instructor/', $this->user_info->role, $matches);
@@ -21,7 +21,7 @@ $app->post('/seasons/del', function(Request $request, Response $response) {
     $params = $request->getParsedBody();
 
 
-    // Инструктор может удалаять только абонемент, по которому нет посещений. ..И который добавил сам инструктор??
+    // Сначала получаем инфрмацию по текущему абонементу, есть ли возможноть заморозить
 
     if ($this->user_info->role == 'instructor'){
         $sql = "SELECT COUNT(*) AS `count` FROM `exercises` WHERE `id_firm` = $id_firm AND `id_seas`= :id_seas";
@@ -37,7 +37,7 @@ $app->post('/seasons/del', function(Request $request, Response $response) {
             $stmt->execute([ 'id_seas' => $params['id_seas'] ]);
             return $response->write('{"result":"success"}');
         } else {
-            return $response->write('{"error":"Forbidden for used season"}');
+            return $response->write('{"error":"Forbidden for the used season"}');
         }
     }
 
