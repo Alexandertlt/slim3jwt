@@ -17,28 +17,46 @@ $app->post('/seasons/freeze', function(Request $request, Response $response) {
 
     $id_firm = $this->user_info->id_firm;
     $id_user = $this->user_info->id_user;
-
+    $db = $this->db;
     $params = $request->getParsedBody();
+
+    $cur_date = date_create_from_format('Ymd', $params['cur_date']);
+    $end_date = date_create_from_format('Ymd', $params['end_date']);
+    $interval = $cur_date->diff($end_date);
 
 
     // Сначала получаем инфрмацию по текущему абонементу, есть ли возможноть заморозить
+    // Если есть рассчитанные занятия то заморозки проводить нельзя.
 
-    if ($this->user_info->role == 'instructor'){
-        $sql = "SELECT COUNT(*) AS `count` FROM `exercises` WHERE `id_firm` = $id_firm AND `id_seas`= :id_seas";
+    $sql = "SELECT `seasons`.`has_frozes`, `seasons`.`status`, `has_days_frozes`, `num_freezes`, `days_freeze`,
+(SELECT COUNT(*) FROM `exercises` WHERE `exercises`.`id_seas` = :id_seas AND `exercises`.`id_firm` = $id_firm AND `exercises`.`id_class` IS NOT NULL, `exercises`.`dt` >= :cur_date) AS `sum_exercises`
+FROM `seasons`
+LEFT JOIN `season_types` ON `seasons`.`stype` = `season_types`.`id_stype`
+WHERE `seasons`.`id_seas` = :id_seas AND `seasons`.`id_firm` = $id_firm";
 
-        $db = $this->db;
+    $stmt = $db->prepare($sql);
+    $stmt->execute([ 'id_seas' => $params['id_seas'],
+        'cur_date' => $params['cur_date']]);
+
+    $res = $stmt->fetchObject();
+    if ($res->status = 'frozen') return $response->write('{"error":"Абонемент уже заморожен"}');
+    if ($res->num_frozes != null and $res->has_frozes == 0) return $response->write('{"error":"Колечество достыпных заморозок было исчерпано"}');
+    if ($res->days_freeze != null){
+        $has_interval = new DateInterval('P'.$res->has_days_frozes.'D');
+        if ($interval > $has_interval) return $response->write('{"error":"Запрашиваемый интервал заморозки больше возможного. Максимальное количество дней заморозки: '.$res->has_days_frozes.'"}');
+    }
+    if ($res->sum_exercises > 0) return $response->write('{"error":"За выбранный период уже есть рассчитанные занятия"}');
+
+
+
+    if ($stmt->fetchObject()->count == 0){
+        // Исполняем
+        $sql = "DELETE FROM `exercises` WHERE `id_firm` = $id_firm AND `id_seas`= :id_seas";
         $stmt = $db->prepare($sql);
         $stmt->execute([ 'id_seas' => $params['id_seas'] ]);
-
-        if ($stmt->fetchObject()->count == 0){
-            // Исполняем
-            $sql = "DELETE FROM `exercises` WHERE `id_firm` = $id_firm AND `id_seas`= :id_seas";
-            $stmt = $db->prepare($sql);
-            $stmt->execute([ 'id_seas' => $params['id_seas'] ]);
-            return $response->write('{"result":"success"}');
-        } else {
-            return $response->write('{"error":"Forbidden for the used season"}');
-        }
+        return $response->write('{"result":"success"}');
+    } else {
+        return $response->write('{"error":"Forbidden for the used season"}');
     }
 
 
