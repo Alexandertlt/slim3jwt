@@ -19,6 +19,7 @@ $app->post('/seasons/del', function(Request $request, Response $response) {
     $id_user = $this->user_info->id_user;
 
     $params = $request->getParsedBody();
+    $db = $this->db;
 
 
     // Инструктор может удалаять только абонемент, по которому нет посещений. ..И который добавил сам инструктор??
@@ -26,19 +27,25 @@ $app->post('/seasons/del', function(Request $request, Response $response) {
     if ($this->user_info->role == 'instructor'){
         $sql = "SELECT COUNT(*) AS `count` FROM `exercises` WHERE `id_firm` = $id_firm AND `id_seas`= :id_seas";
 
-        $db = $this->db;
         $stmt = $db->prepare($sql);
         $stmt->execute([ 'id_seas' => $params['id_seas'] ]);
 
         if ($stmt->fetchObject()->count == 0){
             // Исполняем
-            $sql = "DELETE FROM `exercises` WHERE `id_firm` = $id_firm AND `id_seas`= :id_seas";
+            $sql = "DELETE FROM `seasons` WHERE `id_firm` = $id_firm AND `id_seas`= :id_seas";
             $stmt = $db->prepare($sql);
             $stmt->execute([ 'id_seas' => $params['id_seas'] ]);
             return $response->write('{"result":"success"}');
         } else {
             return $response->write('{"error":"Forbidden for used season"}');
         }
+    }
+
+    if ($this->user_info->role == 'director'){
+        $sql = "DELETE FROM `seasons` WHERE `id_firm` = $id_firm AND `id_seas`= :id_seas";
+        $stmt = $db->prepare($sql);
+        $stmt->execute([ 'id_seas' => $params['id_seas'] ]);
+        return $response->write('{"result":"success"}');
     }
 
 

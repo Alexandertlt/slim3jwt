@@ -1,6 +1,6 @@
 <?php
 /**
- * Заморозить абонемента
+ * Заморозить абонемент
  */
 
 use \Psr\Http\Message\ServerRequestInterface as Request;
