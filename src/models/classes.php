@@ -31,12 +31,14 @@ ORDER BY `weekly_slots`.`time`
 
     // Cписок групп
     $sql_ex = "SELECT `groups`.`id_group`, DATE(:cur_date) AS `date`, TIME_FORMAT(`time`, '%H:%i') AS `time`, `branches`.`name` AS `branch`, `directions`.`name` AS `direction`,
-NULL AS `schedule`, `groups`.`name` AS `group_name`, 'расписание' AS `schedule`, `classes`.`ts` AS `calculated`, `classes`.`id_class` AS `id_class`
+NULL AS `schedule`, `groups`.`name` AS `group_name`, 'расписание' AS `schedule`, `classes`.`ts` AS `calculated`, `classes`.`id_class` AS `id_class`,
+IF(`canceleds`.`date` IS NOT NULL, JSON_OBJECT('date',`canceleds`.`date`, 'id_client_origin',`canceleds`.`origin`, 'reason', `canceleds`.`reason`) ,NULL) AS `canceled`
 FROM `groups`
 JOIN `weekly_slots` ON `groups`.`id_group` = `weekly_slots`.`id_group`
 LEFT JOIN `branches` ON `groups`.`id_branch` = `branches`.`id_branch`
 LEFT JOIN `directions` ON `groups`.`id_dir` = `directions`.`id_dir`
 LEFT JOIN `classes` ON `groups`.`id_group` = `classes`.`id_group` AND :cur_date = DATE(`classes`.`dt`)
+LEFT JOIN `canceleds` ON `groups`.`id_group` = `canceleds`.`id_group` AND :cur_date = `canceleds`.`date`
 WHERE `weekly_slots`.`day_of_week` = DAYOFWEEK(DATE(:cur_date))-1 AND `groups` .`id_firm` = :id_firm AND `groups`.`id_instr`= :id_instr
 ORDER BY `weekly_slots`.`time`";
 

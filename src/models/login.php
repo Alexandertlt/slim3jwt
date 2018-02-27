@@ -34,7 +34,7 @@ $app->post('/login', function(Request $request, Response $response){
             $payload = array(
                 "iss"     => "http://your-domain.com",
                 "iat"     => time(),
-                "exp"     => time() + (3600 * 24 * 15),
+                "exp"     => time() + (3600 * 24 * 30),
                 "context" => [
                     "user" => [
                         "user_login" => $login,

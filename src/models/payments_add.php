@@ -17,16 +17,21 @@ $app->post('/payments/add', function(Request $request, Response $response) {
 
     $id_firm = $this->user_info->id_firm;
     $id_user = $this->user_info->id_user;
-
     $params = $request->getParsedBody();
+    $db = $this->db;
 
-    $origin = ($this->user_info->role == 'instructor' ? ',`id_instr`='.$id_user :
-        ($this->user_info->role == 'admin' ? ',`id_admin`='.$id_user : '') );
 
-    $sql = "INSERT INTO `payments` SET `id_firm` = $id_firm, `dt` = NOW() $origin, `id_client` = :id_client, `summ`= :pay, `note`= :note";
-    $this->logger->info('role:'.$this->user_info->role.'   sql:'.$sql);
+
+    $row = $db->query("SELECT `balance` FROM `payments` WHERE `id_firm` = $id_firm AND  `id_user_holder` = $id_user ORDER BY `id_pay` DESC LIMIT 1")->fetch(PDO::FETCH_OBJ);
+
+    $balance = $row->balance == null ? 0 : $row->balance;
+
+    $sql = "INSERT INTO `payments` SET `id_firm` = $id_firm, `id_user_holder` = $id_user,`dt` = NOW(), `id_client` = :id_client, `summ`= :pay, `balance` = $balance + :pay, `note`= :note";
+
+    $this->logger->info($balance);
+
     try {
-        $db = $this->db;
+
         $stmt = $db->prepare($sql);
         $stmt->execute([ 'id_client' => $params['id_client'],
             'pay' => $params['pay'],
@@ -38,5 +43,5 @@ $app->post('/payments/add', function(Request $request, Response $response) {
             ->write( '{"error":{"text":' . $e->getMessage() . '}}');
     }
 
-    return $response->write('{"id_season":'.$db->lastInsertId().'}');
+    return $response->write('{"id_pay":'.$db->lastInsertId().'}');
 });

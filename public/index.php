@@ -43,6 +43,7 @@ require __DIR__ . '/../src/models/season_info.php';
 require __DIR__ . '/../src/models/tseasons.php';
 require __DIR__ . '/../src/models/seasons_add.php';
 require __DIR__ . '/../src/models/seasons_del.php';
+require __DIR__ . '/../src/models/seasons_freeze.php';
 require __DIR__ . '/../src/models/presence_set.php';
 require __DIR__ . '/../src/models/client_info.php';
 require __DIR__ . '/../src/models/seasons.php';

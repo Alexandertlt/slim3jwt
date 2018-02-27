@@ -15,6 +15,7 @@ $app->get('/payments', function(Request $request, Response $response){
     }
 
     $id_firm = $this->user_info->id_firm;
+    $id_user = $this->user_info->id_user;
     $params = $request->getQueryParams();
     $db = $this->db;
 
@@ -33,20 +34,13 @@ $app->get('/payments', function(Request $request, Response $response){
         $stmt->execute(['id_client' => $params['id_client']]);
         $json->count = $fetchRow->count;
 
-    }
+    } else {
+        // Получаем список всех операций текущего пользователя
+        $fetchRow = $db->query("SELECT COUNT(*) AS `count`, SUM(`summ`) AS `sum_payments` FROM `payments` WHERE `id_firm` = $id_firm AND `id_user_holder`= $id_user")->fetch(PDO::FETCH_OBJ);
 
-    // Получаем список платежей по инстсруктору
-    if (isset($params['id_instr'])) {
-        $sql = "SELECT COUNT(*) AS `count`, SUM(`summ`) AS `sum_payments` FROM `payments` WHERE `id_firm` = $id_firm AND `id_instr`= :id_instr";
-
+        $sql = "SELECT * FROM `payments` WHERE `id_firm` = $id_firm AND `id_user_holder`= $id_user ORDER BY `id_pay`";
         $stmt = $db->prepare($sql);
-        $stmt->execute(['id_instr' => $params['id_instr']]);
-        $fetchRow = $stmt->fetchObject();
-
-        $sql = "SELECT * FROM `payments` WHERE `id_firm` = $id_firm AND `id_instr`= :id_instr ORDER BY `dt`";
-
-        $stmt = $db->prepare($sql);
-        $stmt->execute(['id_instr' => $params['id_instr']]);
+        $stmt->execute();
         $json->count = $fetchRow->count;
         $json->balance = $fetchRow->sum_payments;
     }
