@@ -19,7 +19,7 @@ $app->get('/classes', function(Request $request, Response $response){
     $data = $request->getQueryParams();
 
     $curdate = $data['date'];
-
+    $db = $this->db;
 
     /*
 SELECT * FROM `groups`
@@ -43,7 +43,8 @@ WHERE `weekly_slots`.`day_of_week` = DAYOFWEEK(DATE(:cur_date))-1 AND `groups` .
 ORDER BY `weekly_slots`.`time`";
 
     // Список клиентов в группе
-    $sql_in = "SELECT `seasons`.`id_client`, `seasons`.`id_seas`, `clients`.`name` AS `name`, `season_types`.`name` AS `ticket`, `season_types`.`num_classes`, `seasons`.`has_classes`, `exercises`.`presence`
+    $sql_in = "SELECT `seasons`.`id_client`, `seasons`.`id_seas`, `clients`.`name` AS `name`, `season_types`.`name` AS `ticket_name`, `season_types`.`short_name` AS `ticket_short_name`,
+`season_types`.`num_classes`, `seasons`.`has_classes`,DATE_FORMAT(`seasons`.`expiration`,'%c %b') AS `expiration` , `exercises`.`presence`, `seasons`.`used_classes`, `exercises`.`count_class`
 FROM `seasons`
 LEFT JOIN `clients` ON `seasons`.`id_client` = `clients`.`id_client`
 LEFT JOIN `season_types` ON `seasons`.`stype` = `season_types`.`id_stype`
@@ -51,8 +52,8 @@ LEFT JOIN `exercises` ON `seasons`.`id_group` = `exercises`.`id_group` AND `seas
 WHERE `seasons`.`id_group` = :id_group AND `seasons`.`status` IN ('active', 'new')
 AND :cur_datetime BETWEEN `seasons`.`starts` AND `seasons`.`expiration` + INTERVAL 7 DAY";
 
+    $db->exec("SET lc_time_names = 'ru_RU'");
 
-    $db = $this->db;
     $stmt = $db->prepare($sql_ex);
     $stmt->execute([ 'cur_date' => $curdate,
         'id_firm' => $id_firm,

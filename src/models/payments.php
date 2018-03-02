@@ -38,7 +38,9 @@ $app->get('/payments', function(Request $request, Response $response){
         // Получаем список всех операций текущего пользователя
         $fetchRow = $db->query("SELECT COUNT(*) AS `count`, SUM(`summ`) AS `sum_payments` FROM `payments` WHERE `id_firm` = $id_firm AND `id_user_holder`= $id_user")->fetch(PDO::FETCH_OBJ);
 
-        $sql = "SELECT * FROM `payments` WHERE `id_firm` = $id_firm AND `id_user_holder`= $id_user ORDER BY `id_pay`";
+        $sql = "SELECT `payments`.*, `clients`.`name` AS `client_name`
+FROM `payments` LEFT JOIN `clients` ON `payments`.`id_client` = `clients`.`id_client`
+WHERE `payments`.`id_firm` = $id_firm AND `payments`.`id_user_holder`= $id_user ORDER BY `id_pay`";
         $stmt = $db->prepare($sql);
         $stmt->execute();
         $json->count = $fetchRow->count;

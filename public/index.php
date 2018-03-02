@@ -38,6 +38,7 @@ require __DIR__ . '/../src/models/halls_add.php';
 require __DIR__ . '/../src/models/directions.php';
 require __DIR__ . '/../src/models/directions_add.php';
 require __DIR__ . '/../src/models/classes.php';
+require __DIR__ . '/../src/models/classes_calc.php';
 require __DIR__ . '/../src/models/main.php';
 require __DIR__ . '/../src/models/season_info.php';
 require __DIR__ . '/../src/models/tseasons.php';

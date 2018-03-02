@@ -22,11 +22,9 @@ $app->post('/seasons/add', function(Request $request, Response $response) {
 
     // Перед добавлением сделаем несколько проверок.
     // Не пересекается период действия с уже действующим абонементом. ПОТОМ.
-    // Еще можно будет добавить алгоритм для учета праздничных дней
+    // Еще можно будет добавить алгоритм для учета праздничных дней (?)
 
-    $sql = "INSERT INTO `seasons` (`id_firm`, `id_client`, `purchase`, `origin`, `stype`, `has_classes`, `has_passes`, `starts`, `expiration`, `paid`, `promo`, `status`, `freeze_start`, `freeze_stop`, `id_group`, `note`)
-SELECT $id_firm, :id_client, NOW(), $id_user, :id_stype, `num_classes`, `num_passes`, :dstart, :dstart + INTERVAL `period`-1 DAY, :pay, NULL, 'new', NULL, NULL, :id_group, :note
-FROM `season_types` WHERE `id_stype` = :id_stype";
+    $sql = "CALL `season_add`($id_firm, $id_user, :id_client, :id_stype, :pay, :note, :id_group, :dstart)";
     try {
         $db = $this->db;
         $stmt = $db->prepare($sql);
@@ -43,5 +41,5 @@ FROM `season_types` WHERE `id_stype` = :id_stype";
             ->write( '{"error":{"text":' . $e->getMessage() . '}}');
     }
 
-    return $response->write('{"id_season":'.$db->lastInsertId().'}');
+    return $response->write('{"res":"success"}');
 });
