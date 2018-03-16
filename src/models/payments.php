@@ -20,6 +20,9 @@ $app->get('/payments', function(Request $request, Response $response){
     $db = $this->db;
 
     $json = new stdclass;
+
+    $between = '';
+    if (isset($params['start']) && isset($params['stop'])) $between = ' AND `payments`.`dt` BETWEEN "'. $params['start'] . '" AND "' . $params['stop'] . '" ';
     // Получаем список платежей по клиенту
     if (isset($params['id_client'])) {
         $sql = "SELECT COUNT(*) AS `count` FROM `payments` WHERE `id_firm` = $id_firm AND `id_client`= :id_client";
@@ -36,14 +39,17 @@ $app->get('/payments', function(Request $request, Response $response){
 
     } else {
         // Получаем список всех операций текущего пользователя
-        $fetchRow = $db->query("SELECT COUNT(*) AS `count`, SUM(`summ`) AS `sum_payments` FROM `payments` WHERE `id_firm` = $id_firm AND `id_user_holder`= $id_user")->fetch(PDO::FETCH_OBJ);
+        $fetchRow = $db->query("SELECT COUNT(*) AS `count`, SUM(`summ`) AS `sum_payments`, SUM(IF(`summ` > 0, `summ`, 0)) AS `incoming`, SUM(IF(`summ` < 0, `summ`, 0)) AS `outgoing`
+FROM `payments` WHERE `id_firm` = $id_firm AND `id_user_holder`= $id_user $between")->fetch(PDO::FETCH_OBJ);
 
         $sql = "SELECT `payments`.*, `clients`.`name` AS `client_name`
 FROM `payments` LEFT JOIN `clients` ON `payments`.`id_client` = `clients`.`id_client`
-WHERE `payments`.`id_firm` = $id_firm AND `payments`.`id_user_holder`= $id_user ORDER BY `id_pay`";
+WHERE `payments`.`id_firm` = $id_firm AND `payments`.`id_user_holder`= $id_user $between ORDER BY `id_pay`";
         $stmt = $db->prepare($sql);
         $stmt->execute();
         $json->count = $fetchRow->count;
+        $json->incoming = $fetchRow->incoming;
+        $json->outgoing = $fetchRow->outgoing;
         $json->balance = $fetchRow->sum_payments;
     }
 

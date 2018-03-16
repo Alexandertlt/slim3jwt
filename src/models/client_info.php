@@ -1,6 +1,6 @@
 <?php
 /**
- * Выдачача списка клиентов
+ * Информация по запрошенному клиенту
  */
 
 use \Psr\Http\Message\ServerRequestInterface as Request;
