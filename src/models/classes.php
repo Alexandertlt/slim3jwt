@@ -49,7 +49,7 @@ FROM `seasons`
 LEFT JOIN `clients` ON `seasons`.`id_client` = `clients`.`id_client`
 LEFT JOIN `season_types` ON `seasons`.`stype` = `season_types`.`id_stype`
 LEFT JOIN `exercises` ON `seasons`.`id_group` = `exercises`.`id_group` AND `seasons`.`id_client` = `exercises`.`id_client` AND `exercises`.`dt` = :cur_datetime
-WHERE `seasons`.`id_group` = :id_group AND `seasons`.`status` IN ('active', 'new', 'isover') AND `seasons`.`starts` <= :cur_datetime
+WHERE `seasons`.`id_group` = :id_group AND `seasons`.`status` IN ('active', 'new', 'isover', 'frozen') AND `seasons`.`starts` <= :cur_datetime
 ORDER BY `clients`.`name`";
 // AND :cur_datetime BETWEEN `seasons`.`starts` AND `seasons`.`expiration` + INTERVAL 7 DAY";
 

@@ -24,7 +24,7 @@ $app->post('/presence', function(Request $request, Response $response) {
 
     // Проверка абонемент
     $seas = $db->query("SELECT * FROM `seasons` WHERE `id_seas` = ".$p[3]." AND `id_firm`= $id_firm")->fetch(PDO::FETCH_ASSOC);
-    // exit($seas['status']);
+
     if ($seas['status'] != 'active' && $seas['status'] != 'new') {
         return $response->write('"err":{"error":"no_season", "err_text":"Нет активного абонемента."}');
     }
