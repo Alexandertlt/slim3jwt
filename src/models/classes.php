@@ -44,10 +44,12 @@ ORDER BY `weekly_slots`.`time`";
 
     // Список клиентов в группе
     $sql_in = "SELECT `seasons`.`id_client`, `seasons`.`id_seas`, `clients`.`name` AS `name`, `season_types`.`name` AS `ticket_name`, `season_types`.`short_name` AS `ticket_short_name`,
-`season_types`.`num_classes`, `seasons`.`has_classes`,DATE_FORMAT(`seasons`.`expiration`,'%e %b') AS `expiration` , `seasons`.`status`, `exercises`.`presence`, `seasons`.`used_classes`, `exercises`.`count_class`
+`season_types`.`num_classes`, `seasons`.`has_classes`,DATE_FORMAT(`seasons`.`expiration`,'%e %b') AS `expiration` , `seasons`.`status`, `exercises`.`presence`, `seasons`.`used_classes`, `exercises`.`count_class`,
+`debts`.`val` AS `debt`, `debts`.`id_debt`
 FROM `seasons`
 LEFT JOIN `clients` ON `seasons`.`id_client` = `clients`.`id_client`
 LEFT JOIN `season_types` ON `seasons`.`stype` = `season_types`.`id_stype`
+LEFT JOIN `debts` ON `seasons`.`id_client` = `debts`.`id_client`
 LEFT JOIN `exercises` ON `seasons`.`id_group` = `exercises`.`id_group` AND `seasons`.`id_client` = `exercises`.`id_client` AND `exercises`.`dt` = :cur_datetime
 WHERE `seasons`.`id_group` = :id_group AND `seasons`.`status` IN ('active', 'new', 'isover', 'frozen') AND `seasons`.`starts` <= :cur_datetime
 ORDER BY `clients`.`name`";
