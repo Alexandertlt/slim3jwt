@@ -32,7 +32,7 @@ ORDER BY `weekly_slots`.`time`
     // Cписок групп
     $sql_ex = "SELECT `groups`.`id_group`, DATE(:cur_date) AS `date`, TIME_FORMAT(`time`, '%H:%i') AS `time`, `branches`.`name` AS `branch`, `directions`.`name` AS `direction`,
 NULL AS `schedule`, `groups`.`name` AS `group_name`, 'расписание' AS `schedule`, `classes`.`ts` AS `calculated`, `classes`.`id_class` AS `id_class`,
-IF(`canceleds`.`date` IS NOT NULL, JSON_OBJECT('date',`canceleds`.`date`, 'id_client_origin',`canceleds`.`origin`, 'reason', `canceleds`.`reason`) ,NULL) AS `canceled`
+IF(`canceleds`.`date` IS NOT NULL,`canceleds`.`reason` ,NULL) AS `canceled`
 FROM `groups`
 JOIN `weekly_slots` ON `groups`.`id_group` = `weekly_slots`.`id_group`
 LEFT JOIN `branches` ON `groups`.`id_branch` = `branches`.`id_branch`
@@ -49,7 +49,7 @@ ORDER BY `weekly_slots`.`time`";
 FROM `seasons`
 LEFT JOIN `clients` ON `seasons`.`id_client` = `clients`.`id_client`
 LEFT JOIN `season_types` ON `seasons`.`stype` = `season_types`.`id_stype`
-LEFT JOIN `debts` ON `seasons`.`id_client` = `debts`.`id_client`
+LEFT JOIN `debts` ON `seasons`.`id_client` = `debts`.`id_client` AND `debts`.`canceled` IS NULL
 LEFT JOIN `exercises` ON `seasons`.`id_group` = `exercises`.`id_group` AND `seasons`.`id_client` = `exercises`.`id_client` AND `exercises`.`dt` = :cur_datetime
 WHERE `seasons`.`id_group` = :id_group AND `seasons`.`status` IN ('active', 'new', 'isover', 'frozen') AND `seasons`.`starts` <= :cur_datetime
 ORDER BY `clients`.`name`";

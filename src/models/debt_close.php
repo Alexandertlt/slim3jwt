@@ -16,11 +16,13 @@ $app->post('/debts/close', function(Request $request, Response $response) {
     }
 
     $id_firm = $this->user_info->id_firm;
-
+    $id_user = $this->user_info->id_user;
+    $db = $this->db;
     $params = $request->getParsedBody();
-    $sql = "";
+
+    $sql = "CALL `debt_close`($id_firm, $id_user, :id_debt, :summ)";
     try {
-        $db = $this->db;
+
         $stmt = $db->prepare($sql);
         $stmt->execute([ 'id_debt' => $params['id_debt'],
             'summ' => $params['summ'] ]);

@@ -51,5 +51,8 @@ require __DIR__ . '/../src/models/client_edit.php';
 require __DIR__ . '/../src/models/seasons.php';
 require __DIR__ . '/../src/models/payments.php';
 require __DIR__ . '/../src/models/payments_add.php';
-
+require __DIR__ . '/../src/models/debt_close.php';
+require __DIR__ . '/../src/models/invoice.php';
+require __DIR__ . '/../src/models/wages.php';
+require __DIR__ . '/../src/models/wage_calc_get.php';
 $app->run();
