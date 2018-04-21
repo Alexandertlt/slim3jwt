@@ -17,6 +17,8 @@ $app->post('/presence', function(Request $request, Response $response) {
     }
 
     $id_firm = $this->user_info->id_firm;
+    $id_instr = $this->user_info->id_instr;
+
     $params = $request->getParsedBody();
     $db = $this->db;
 
@@ -26,7 +28,7 @@ $app->post('/presence', function(Request $request, Response $response) {
     $seas = $db->query("SELECT * FROM `seasons` WHERE `id_seas` = ".$p[3]." AND `id_firm`= $id_firm")->fetch(PDO::FETCH_ASSOC);
 
     if ($seas['status'] != 'active' && $seas['status'] != 'new') {
-        return $response->write('"err":{"error":"no_season", "err_text":"Нет активного абонемента."}');
+        return $response->write('{"err":{"error":"no_season", "err_text":"Нет активного абонемента."}}');
     }
 
 
@@ -49,7 +51,7 @@ WHERE `exercises`.`id_firm` = $id_firm AND `exercises`.`id_group` = :id_group AN
         if ($row['presence'] === '1') $pres = 0;
     } else {
         $sql = 'INSERT INTO `exercises` SET `id_firm`='.$id_firm.', `id_client`='.$p[2].', `id_seas`='
-            .$p[3].', `id_group`= '.$p[1].',`dt`="'.$p[0].'", `presence`=1, `type`="test"';
+            .$p[3].', `id_group`= '.$p[1].',`dt`="'.$p[0].'", `id_instr`= '.$id_instr.', `presence`=1, `type`="test"';
     }
 
     $stmt->closeCursor();

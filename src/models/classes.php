@@ -39,7 +39,7 @@ LEFT JOIN `branches` ON `groups`.`id_branch` = `branches`.`id_branch`
 LEFT JOIN `directions` ON `groups`.`id_dir` = `directions`.`id_dir`
 LEFT JOIN `classes` ON `groups`.`id_group` = `classes`.`id_group` AND :cur_date = DATE(`classes`.`dt`)
 LEFT JOIN `canceleds` ON `groups`.`id_group` = `canceleds`.`id_group` AND :cur_date = `canceleds`.`date`
-WHERE `weekly_slots`.`day_of_week` = DAYOFWEEK(DATE(:cur_date))-1 AND `groups` .`id_firm` = :id_firm AND `groups`.`id_instr`= :id_instr
+WHERE `weekly_slots`.`day_of_week` = DAYOFWEEK(DATE(:cur_date)) AND `groups` .`id_firm` = :id_firm AND `groups`.`id_instr`= :id_instr
 ORDER BY `weekly_slots`.`time`";
 
     // Список клиентов в группе
