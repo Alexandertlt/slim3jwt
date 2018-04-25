@@ -42,7 +42,9 @@ $app->get('/payments', function(Request $request, Response $response){
         $fetchRow = $db->query("SELECT COUNT(*) AS `count`, SUM(`summ`) AS `sum_payments`, SUM(IF(`summ` > 0, `summ`, 0)) AS `incoming`, SUM(IF(`summ` < 0, `summ`, 0)) AS `outgoing`
 FROM `payments` WHERE `id_firm` = $id_firm AND `id_user_holder`= $id_user $between")->fetch(PDO::FETCH_OBJ);
 
-        $sql = "SELECT `payments`.*, `clients`.`name` AS `client_name`
+        $sql = "SELECT `payments`.`id_pay`,`payments`.`id_firm`,`payments`.`id_user_holder`, DATE_FORMAT(`payments`.`dt`, '%d.%m.%Y %H:%i') AS `dt`,
+`payments`.`id_admin`,`payments`.`id_instr`,`payments`.`id_client`,`payments`.`summ`,`payments`.`balance`,
+`payments`.`note`,`payments`.`id_seas`, `clients`.`name` AS `client_name`
 FROM `payments` LEFT JOIN `clients` ON `payments`.`id_client` = `clients`.`id_client`
 WHERE `payments`.`id_firm` = $id_firm AND `payments`.`id_user_holder`= $id_user $between ORDER BY `id_pay`";
         $stmt = $db->prepare($sql);

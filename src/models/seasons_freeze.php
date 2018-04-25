@@ -16,7 +16,8 @@ $app->post('/seasons/freeze', function(Request $request, Response $response) {
     }
 
     $id_firm = $this->user_info->id_firm;
-    $id_user = $this->user_info->id_user;
+
+    $id_instr = $this->user_info->id_instr;
     $db = $this->db;
     $params = $request->getParsedBody();
 
@@ -57,7 +58,14 @@ WHERE `id_firm` = $id_firm AND `id_seas`= :id_seas";
         'start_date' => $params['start_date'],
         'end_date' => $params['end_date'] ]);
 
-    return $response->write('{"result":"success"}');
+    $sql = "INSERT INTO `events` SET `id_firm` = $id_firm, `dt` = NOW(), `id_instr` = $id_instr,
+`id_client` = (SELECT `id_client` FROM `seasons` WHERE `id_seas` = :id_seas), `type` = 'freezing',
+`note` = CONCAT('Заморозка c ', :start_date, ' по ', :end_date)";
+    $stmt = $db->prepare($sql);
+    $stmt->execute([ 'id_seas' => $params['id_seas'],
+        'start_date' => $params['start_date'],
+        'end_date' => $params['end_date'] ]);
 
+    return $response->write('{"result":"success"}');
 
 });

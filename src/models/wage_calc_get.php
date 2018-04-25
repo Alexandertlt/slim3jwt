@@ -22,7 +22,7 @@ $app->get('/wages/[{id_wage}]', function(Request $request, Response $response, a
    $this->logger->info($args['id_wage']);
     $json  = new stdclass;
 
-    $sql = 'SELECT *, (SELECT `clients`.`name` FROM `clients` WHERE `wage_calc`.`id_client` = `clients`.`id_client`) AS `client_name`,
+    $sql = 'SELECT *, DATE_FORMAT(`dt`, "%d.%m.%Y %H:%i") AS `dt_format`, (SELECT `clients`.`name` FROM `clients` WHERE `wage_calc`.`id_client` = `clients`.`id_client`) AS `client_name`,
 (SELECT `season_types`.`short_name` FROM `season_types` WHERE `wage_calc`.`id_stype` = `season_types`.`id_stype`) AS `season_short_name`
 FROM `wage_calc` WHERE `id_wage`='. $args['id_wage'] . ' AND `id_firm`='. $id_firm;
 

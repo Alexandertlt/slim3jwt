@@ -31,7 +31,7 @@ ORDER BY `weekly_slots`.`time`
 
     // Cписок групп
     $sql_ex = "SELECT `groups`.`id_group`, DATE(:cur_date) AS `date`, TIME_FORMAT(`time`, '%H:%i') AS `time`, `branches`.`name` AS `branch`, `directions`.`name` AS `direction`,
-NULL AS `schedule`, `groups`.`name` AS `group_name`, 'расписание' AS `schedule`, `classes`.`ts` AS `calculated`, `classes`.`id_class` AS `id_class`,
+`groups`.`name` AS `group_name`, 'расписание' AS `schedule`, DATE_FORMAT(`classes`.`ts`, '%d.%m.%Y %H:%i') AS `calculated`, `classes`.`id_class` AS `id_class`,
 IF(`canceleds`.`date` IS NOT NULL,`canceleds`.`reason` ,NULL) AS `canceled`
 FROM `groups`
 JOIN `weekly_slots` ON `groups`.`id_group` = `weekly_slots`.`id_group`
@@ -40,6 +40,7 @@ LEFT JOIN `directions` ON `groups`.`id_dir` = `directions`.`id_dir`
 LEFT JOIN `classes` ON `groups`.`id_group` = `classes`.`id_group` AND :cur_date = DATE(`classes`.`dt`)
 LEFT JOIN `canceleds` ON `groups`.`id_group` = `canceleds`.`id_group` AND :cur_date = `canceleds`.`date`
 WHERE `weekly_slots`.`day_of_week` = DAYOFWEEK(DATE(:cur_date)) AND `groups` .`id_firm` = :id_firm AND `groups`.`id_instr`= :id_instr
+AND DATE(:cur_date) BETWEEN `weekly_slots`.`start` AND `weekly_slots`.`end`
 ORDER BY `weekly_slots`.`time`";
 
     // Список клиентов в группе
@@ -51,7 +52,7 @@ LEFT JOIN `clients` ON `seasons`.`id_client` = `clients`.`id_client`
 LEFT JOIN `season_types` ON `seasons`.`stype` = `season_types`.`id_stype`
 LEFT JOIN `debts` ON `seasons`.`id_client` = `debts`.`id_client` AND `debts`.`canceled` IS NULL
 LEFT JOIN `exercises` ON `seasons`.`id_group` = `exercises`.`id_group` AND `seasons`.`id_client` = `exercises`.`id_client` AND `exercises`.`dt` = :cur_datetime
-WHERE `seasons`.`id_group` = :id_group AND `seasons`.`status` IN ('active', 'new', 'isover', 'frozen') AND `seasons`.`starts` <= :cur_datetime
+WHERE `seasons`.`id_group` = :id_group AND `seasons`.`status` IN ('active', 'new', 'isover', 'frozen') AND `seasons`.`starts` <= :cur_datetime AND `seasons`.`id_firm` = :id_firm
 ORDER BY `clients`.`name`";
 // AND :cur_datetime BETWEEN `seasons`.`starts` AND `seasons`.`expiration` + INTERVAL 7 DAY";
 
@@ -69,7 +70,8 @@ ORDER BY `clients`.`name`";
 
         $istmt = $db->prepare($sql_in);
         $istmt->execute([ 'cur_datetime' => $row['date'].' '.$row['time'],
-                            'id_group' => $row['id_group']]);
+                            'id_group' => $row['id_group'],
+                            'id_firm' => $id_firm ]);
         while ($client = $istmt->fetch(PDO::FETCH_ASSOC)){
             $row['clients'][] = $client;
         }
