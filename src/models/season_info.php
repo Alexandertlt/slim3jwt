@@ -18,7 +18,7 @@ $app->get('/season', function(Request $request, Response $response){
     $params = $request->getQueryParams();
     $db = $this->db;
 
-    $sql = "SELECT `seasons`.*, `season_types`.`name` AS `season_name`, `clients`.`name` AS `client_name`, `num_classes`, `num_freezes`, `days_freeze`,
+    $sql = "SELECT `seasons`.*, `season_types`.`name` AS `season_name`, `season_types`.`cost`, `season_types`.`short_name`, `clients`.`name` AS `client_name`, `num_classes`, `num_freezes`, `days_freeze`,
 (SELECT COUNT(*) FROM `exercises` WHERE `exercises`.`id_seas` = :id_seas AND `exercises`.`id_firm` = $id_firm AND `exercises`.`id_class` IS NOT NULL) AS `sum_exercises` FROM `seasons`
 LEFT JOIN `season_types` ON `seasons`.`stype` = `season_types`.`id_stype`
 LEFT JOIN `clients` ON `seasons`.`id_client` = `clients`.`id_client`
