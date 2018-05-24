@@ -22,7 +22,7 @@ $app->get('/payments', function(Request $request, Response $response){
     $json = new stdclass;
 
     $between = '';
-    if (isset($params['start']) && isset($params['stop'])) $between = ' AND `payments`.`dt` BETWEEN "'. $params['start'] . '" AND "' . $params['stop'] . '" ';
+    if (isset($params['start']) && isset($params['stop'])) $between = ' AND DATE(`payments`.`dt`) BETWEEN "'. $params['start'] . '" AND "' . $params['stop'] . '" ';
     // Получаем список платежей по клиенту
     if (isset($params['id_client'])) {
         $sql = "SELECT COUNT(*) AS `count` FROM `payments` WHERE `id_firm` = $id_firm AND `id_client`= :id_client";

@@ -20,11 +20,12 @@ $app->post('/debts/close', function(Request $request, Response $response) {
     $db = $this->db;
     $params = $request->getParsedBody();
 
-    $sql = "CALL `debt_close`($id_firm, $id_user, :id_debt, :summ)";
+    $sql = "CALL `debt_close`($id_firm, $id_user, :id_group, :id_debt, :summ)";
     try {
 
         $stmt = $db->prepare($sql);
         $stmt->execute([ 'id_debt' => $params['id_debt'],
+            'id_group' => $params['id_group'],
             'summ' => $params['summ'] ]);
 
     } catch (PDOException $e) {

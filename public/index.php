@@ -45,6 +45,7 @@ require __DIR__ . '/../src/models/tseasons.php';
 require __DIR__ . '/../src/models/seasons_add.php';
 require __DIR__ . '/../src/models/seasons_del.php';
 require __DIR__ . '/../src/models/seasons_freeze.php';
+require __DIR__ . '/../src/models/seasons_unfreeze.php';
 require __DIR__ . '/../src/models/presence_set.php';
 require __DIR__ . '/../src/models/client_info.php';
 require __DIR__ . '/../src/models/client_edit.php';
@@ -55,4 +56,8 @@ require __DIR__ . '/../src/models/debt_close.php';
 require __DIR__ . '/../src/models/invoice.php';
 require __DIR__ . '/../src/models/wages.php';
 require __DIR__ . '/../src/models/wage_calc_get.php';
+require __DIR__ . '/../src/models/booking.php';
+require __DIR__ . '/../src/models/booking_add.php';
+require __DIR__ . '/../src/models/user_info.php';
+
 $app->run();
